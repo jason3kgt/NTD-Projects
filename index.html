@@ -778,6 +778,61 @@ function editProject() {
 }
 
 // ── MODAL ─────────────────────────────────────────────────
+function buildTypeGrid() {
+  var g = document.getElementById('type-grid');
+  if(!g) return;
+  g.innerHTML = PROJECT_TYPES.map(function(t){
+    var b=document.createElement('button');
+    b.className='type-btn'+(t.id===selectedType?' selected':'');
+    b.setAttribute('data-type',t.id);
+    b.style.touchAction='manipulation';
+    b.innerHTML='<span class="icon">'+t.icon+'</span>'+t.label;
+    b.addEventListener('click',function(){ selectType(this.getAttribute('data-type')); });
+    return b.outerHTML;
+  }).join('');
+}
+
+function selectType(id) {
+  selectedType = id;
+  buildTypeGrid();
+}
+
+function openNewProject() {
+  document.getElementById('np-name').value='';
+  document.getElementById('np-customer').value='';
+  document.getElementById('np-address').value='';
+  document.getElementById('np-value').value='';
+  document.getElementById('np-notes').value='';
+  document.getElementById('np-date').value=new Date().toISOString().split('T')[0];
+  selectedType='rtu-replace'; buildTypeGrid();
+  document.getElementById('new-modal').classList.add('open');
+}
+
+function createProject() {
+  var name = document.getElementById('np-name').value.trim();
+  var customer = document.getElementById('np-customer').value.trim();
+  if(!name){ toast('Please enter a project name'); return; }
+  if(!customer){ toast('Please enter a customer name'); return; }
+  var p = {
+    id: Date.now().toString(),
+    name: name, customer: customer,
+    address: document.getElementById('np-address').value,
+    type: selectedType,
+    value: document.getElementById('np-value').value,
+    date: document.getElementById('np-date').value,
+    notes: document.getElementById('np-notes').value,
+    stage: 'Quoted',
+    docs: {},
+    created: new Date().toISOString(),
+  };
+  projects.unshift(p);
+  saveProjects();
+  closeModal('new-modal');
+  renderAll();
+  toast('Project created!');
+  openDetail(p.id);
+}
+
 function closeModal(id) {
   document.getElementById(id).classList.remove('open');
 }
