@@ -1,0 +1,24 @@
+{
+  "name": "NTD Project Manager",
+  "short_name": "NTD Projects",
+  "description": "NTD Mechanical Project Tracking",
+  "start_url": "/ntd-projects/index.html",
+  "scope": "/ntd-projects/",
+  "display": "standalone",
+  "background_color": "#1B3A6B",
+  "theme_color": "#1B3A6B",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
