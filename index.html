@@ -676,16 +676,54 @@ function openDetail(id) {
         '<div class="doc-item-desc">'+esc(d.desc)+'</div>'+
         (d.req?'<div class="doc-item-required">Required</div>':'');
 
+      // Notes input
       var noteInput=document.createElement('input');
       noteInput.type='text'; noteInput.className='doc-notes-input';
       noteInput.placeholder='Notes...'; noteInput.value=state.notes||'';
-      (function(docId){
+
+      // Link input
+      var linkWrap=document.createElement('div');
+      linkWrap.style.cssText='display:flex;gap:6px;margin-top:6px;align-items:center;';
+      var linkInput=document.createElement('input');
+      linkInput.type='url'; linkInput.className='doc-notes-input';
+      linkInput.style.cssText='margin-top:0;flex:1;font-size:12px;';
+      linkInput.placeholder='Paste OneDrive link here...';
+      linkInput.value=state.link||'';
+
+      // OneDrive button
+      var odBtn=document.createElement('a');
+      odBtn.href='https://onedrive.live.com';
+      odBtn.target='_blank';
+      odBtn.style.cssText='flex-shrink:0;background:#0078D4;color:#fff;padding:7px 10px;border-radius:8px;font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;touch-action:manipulation;';
+      odBtn.innerHTML='&#128194; OneDrive';
+      odBtn.addEventListener('click',function(e){e.stopPropagation();});
+
+      // Open link button (only shows if link is set)
+      var openBtn=document.createElement('a');
+      openBtn.target='_blank';
+      openBtn.style.cssText='flex-shrink:0;background:#2e7d32;color:#fff;padding:7px 10px;border-radius:8px;font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;touch-action:manipulation;display:'+(state.link?'block':'none')+';';
+      openBtn.innerHTML='&#128279; Open';
+      openBtn.href=state.link||'#';
+      openBtn.addEventListener('click',function(e){e.stopPropagation();});
+
+      linkWrap.appendChild(linkInput);
+      linkWrap.appendChild(odBtn);
+      linkWrap.appendChild(openBtn);
+
+      (function(docId, oBtn, lInp){
         noteInput.addEventListener('click',function(e){e.stopPropagation();});
         noteInput.addEventListener('change',function(){updateDocNotes(docId,this.value);});
+        lInp.addEventListener('click',function(e){e.stopPropagation();});
+        lInp.addEventListener('change',function(){
+          updateDocLink(docId,this.value);
+          oBtn.href=this.value||'#';
+          oBtn.style.display=this.value?'block':'none';
+        });
         item.addEventListener('click',function(){toggleDoc(docId);});
-      })(d.id);
+      })(d.id, openBtn, linkInput);
 
       info.appendChild(noteInput);
+      info.appendChild(linkWrap);
       item.appendChild(chk);
       item.appendChild(info);
       sec.appendChild(item);
@@ -719,8 +757,17 @@ function updateDocNotes(docId, val) {
   var p = projects.find(function(x){return x.id===currentProjectId;});
   if(!p) return;
   if(!p.docs) p.docs={};
-  if(!p.docs[docId]) p.docs[docId]={done:false,notes:''};
+  if(!p.docs[docId]) p.docs[docId]={done:false,notes:'',link:''};
   p.docs[docId].notes = val;
+  saveProjects();
+}
+
+function updateDocLink(docId, val) {
+  var p = projects.find(function(x){return x.id===currentProjectId;});
+  if(!p) return;
+  if(!p.docs) p.docs={};
+  if(!p.docs[docId]) p.docs[docId]={done:false,notes:'',link:''};
+  p.docs[docId].link = val;
   saveProjects();
 }
 
