@@ -781,15 +781,15 @@ function editProject() {
 function buildTypeGrid() {
   var g = document.getElementById('type-grid');
   if(!g) return;
-  g.innerHTML = PROJECT_TYPES.map(function(t){
+  g.innerHTML = '';
+  PROJECT_TYPES.forEach(function(t){
     var b=document.createElement('button');
     b.className='type-btn'+(t.id===selectedType?' selected':'');
-    b.setAttribute('data-type',t.id);
     b.style.touchAction='manipulation';
     b.innerHTML='<span class="icon">'+t.icon+'</span>'+t.label;
-    b.addEventListener('click',function(){ selectType(this.getAttribute('data-type')); });
-    return b.outerHTML;
-  }).join('');
+    b.addEventListener('click',function(){ selectType(t.id); });
+    g.appendChild(b);
+  });
 }
 
 function selectType(id) {
